@@ -1,5 +1,5 @@
 # =============================================================================
-# PROJET DÉTECTION DE FRAUDE - CODE STRICTEMENT CONFORME
+# PROJET DÉTECTION DE FRAUDE 
 # Équipe : ADYEL Ilyès, ATTIOGBE Killian, DIAW Ismaël
 # =============================================================================
 
@@ -33,7 +33,7 @@ except FileNotFoundError:
 
 df_processed = df.copy()
 
-# --- Exactement tes Features ---
+
 df_processed['payment_per_transaction'] = df_processed.apply(
     lambda x: x['No_Payments'] / x['No_Transactions'] if x['No_Transactions'] > 0 else 0, axis=1
 )
@@ -64,7 +64,7 @@ print(f"Features prêtes : {len(feature_columns)}")
 # =============================================================================
 # 2. EDA (Visuels rapides)
 # =============================================================================
-# Tes graphiques originaux (Pie chart et Bar chart)
+
 fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 df['Fraud'].value_counts().plot(kind='pie', ax=axes[0], autopct='%1.1f%%', colors=['lightgreen', 'lightcoral'])
 axes[0].set_title('Fraud Distribution')
@@ -74,21 +74,21 @@ axes[1].set_title('Fraud Count')
 plt.show()
 
 # =============================================================================
-# 3. PARTIE ISMAËL : FEATURE IMPORTANCE (Diagramme en Barre EXACT)
+# 3. PARTIE ISMAËL : FEATURE IMPORTANCE 
 # =============================================================================
 print("\n--- 3. Analyse Feature Importance (Ismaël) ---")
 
-# ATTENTION : Ici je remets ton split exact de 0.25 pour retrouver tes résultats
+
 X_train_feat, X_test_feat, y_train_feat, y_test_feat = train_test_split(
     X, y, test_size=0.25, random_state=42, stratify=y
 )
 
 scaler_feat = StandardScaler()
 X_train_scaled_feat = scaler_feat.fit_transform(X_train_feat)
-# DataFrame pour garder les noms
+
 X_train_scaled_feat = pd.DataFrame(X_train_scaled_feat, columns=feature_columns)
 
-# Modèle spécifique utilisé pour ton graphique
+
 lr_model_feat = LogisticRegression(
     class_weight='balanced',
     random_state=42,
@@ -97,14 +97,14 @@ lr_model_feat = LogisticRegression(
 )
 lr_model_feat.fit(X_train_scaled_feat, y_train_feat)
 
-# Calcul des coefficients exacts
+
 feature_importance = pd.DataFrame({
     'feature': feature_columns,
     'coefficient': lr_model_feat.coef_[0],
     'abs_coefficient': np.abs(lr_model_feat.coef_[0])
 }).sort_values('abs_coefficient', ascending=False)
 
-# --- TON DIAGRAMME EN BARRE (Rouge/Vert) ---
+
 plt.figure(figsize=(10, 8))
 colors = ['red' if x < 0 else 'green' for x in feature_importance['coefficient']]
 plt.barh(range(len(feature_importance)), feature_importance['coefficient'], color=colors)
@@ -114,7 +114,7 @@ plt.title('Feature Importance (Logistic Regression Coefficients)')
 plt.axvline(x=0, color='black', linestyle='-', linewidth=0.5)
 plt.grid(True, alpha=0.3)
 
-# Ajout des valeurs exactes (le texte sur les barres)
+
 for i, v in enumerate(feature_importance['coefficient']):
     if v < 0:
         plt.text(v - 0.02, i, f'{v:.3f}', ha='right', va='center')
@@ -124,7 +124,7 @@ for i, v in enumerate(feature_importance['coefficient']):
 plt.tight_layout()
 plt.show()
 
-# Optimisation LogReg (Ismaël suite)
+# Optimisation LogReg 
 print("Optimisation LogReg en cours...")
 lr = LogisticRegression(max_iter=1000, random_state=42, class_weight='balanced')
 param_grid_lr = {'C': [0.01, 0.1, 1, 10, 100], 'solver': ['liblinear', 'lbfgs']}
@@ -139,7 +139,7 @@ print(f"Meilleurs params LogReg : {grid_search_lr.best_params_}")
 # =============================================================================
 print("\n--- 4. Optimisation Random Forest (Ilyès) ---")
 
-# On garde le split de la section précédente pour cohérence dans le voting
+
 rf = RandomForestClassifier(class_weight='balanced', random_state=42)
 param_grid_rf = {'n_estimators': [50, 100, 200], 'max_depth': [None, 10, 20], 'min_samples_split': [2, 5]}
 
